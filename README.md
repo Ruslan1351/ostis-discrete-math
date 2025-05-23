@@ -18,7 +18,7 @@ Download project
 
 ```sh
 git clone https://github.com/ostis-apps/ostis-discrete-math.git
-cd ostis-discrete-math/scripts
+cd ostis-discrete-math
 
 ```
 
@@ -62,31 +62,44 @@ exec $SHELL
 Install and build submodules:
 
 ```sh
-./install.sh     
+./scripts/install.sh
 
 ```
 
-Build knowledge base
+Install dependencies for problem solver:
 
 ```sh
-cd scripts 
-./build_kb.sh 
+conan install . -s build_type=Debug --build=missing
+````
+
+Build problem solver:
+
+```sh
+cmake --preset debug-conan
+cmake --build --preset debug
+```
+
+Build knowledge base:
+
+```sh
+cd scripts
+./build_kb.sh
 
 ```
 
-Start project
+Start project:
 
 ```sh
-cd scripts 
-./run_sc_machine.sh 
+cd scripts
+./run_sc_machine.sh
 
 ```
 
-Start web-server
+Start web-server:
 
 ```sh
 cd scripts 
-./run_sc_web.sh   
+./run_sc_web.sh
 
 ```
 

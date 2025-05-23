@@ -26,3 +26,8 @@ sc-server.log
 .DS_Store
 secret.txt
 data.db
+
+ConanPresets.json
+CMakeCache.txt
+CMakeFiles
+DartConfiguration.tcl
