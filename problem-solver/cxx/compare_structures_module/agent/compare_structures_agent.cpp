@@ -91,9 +91,9 @@ ScResult CompareStructuresAgent::DoProgram(ScAction & action)
  
   ScAddr const & tupleAddr = m_context.GenerateNode(ScType::ConstNodeTuple);
 
-  ScAddr const & conceptDifferenceAddr = m_context.ResolveElementSystemIdentifier("concept_difference", ScType::ConstNodeClass);
-  ScAddr const & conceptForwardDifferenceAddr = m_context.ResolveElementSystemIdentifier("concept_forward_difference", ScType::ConstNodeClass);
-  ScAddr const & conceptReverseDifferenceAddr = m_context.ResolveElementSystemIdentifier("concept_reverse_difference", ScType::ConstNodeClass);
+  ScAddr const & conceptDifferenceAddr = m_context.SearchElementBySystemIdentifier(CompareStructuresKeynodes::concept_difference);
+  ScAddr const & conceptForwardDifferenceAddr = m_context.SearchElementBySystemIdentifier(CompareStructuresKeynodes::concept_forward_difference);
+  ScAddr const & conceptReverseDifferenceAddr = m_context.SearchElementBySystemIdentifier(CompareStructuresKeynodes::concept_reverse_difference);
 
   ScAddr const & arc1 = m_context.GenerateConnector(ScType::ConstPermPosArc, conceptDifferenceAddr, tupleAddr);
   ScAddr const & arc2 = m_context.GenerateConnector(ScType::ConstPermPosArc, conceptForwardDifferenceAddr, structWithMissingElementsAddr);
