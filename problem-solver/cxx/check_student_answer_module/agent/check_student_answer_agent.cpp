@@ -34,46 +34,29 @@ ScResult CheckStudentAnswerAgent::DoProgram(ScAction & action)
   ScAddr const & expectedAnswerAddr = templ1Result[0]["_structure"];
   
   ScAction someAction = m_context.GenerateAction(CheckStudentAnswerKeynodes::action_compare_structures);
-  ScAddr const & rrel1Addr = m_context.SearchElementBySystemIdentifier(ScKeynodes::rrel_1);
-  ScAddr const & rrel2Addr = m_context.SearchElementBySystemIdentifier(ScKeynodes::rrel_2);
   ScAddr const & arc1 = m_context.GenerateConnector(ScType::ConstPermPosArc, someAction, studentAnswerAddr);
-  m_context.GenerateConnector(ScType::ConstPermPosArc, rrel1Addr, arc1);
+  m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::rrel_1, arc1);
   ScAddr const & arc2 = m_context.GenerateConnector(ScType::ConstPermPosArc, someAction, expectedAnswerAddr);
-  m_context.GenerateConnector(ScType::ConstPermPosArc, rrel2Addr, arc2);
-  someAction.InitiateAndWait(100);
-  if (someAction.IsFinishedUnsuccessfully()) {
+  m_context.GenerateConnector(ScType::ConstPermPosArc, ScKeynodes::rrel_2, arc2);
+  if (!someAction.InitiateAndWait(100)) {
     m_logger.Warning("Compare structures action finished unseccessfully.");
     return action.FinishWithError();
   }
   ScStructure const & someActionResult = someAction.GetResult();
+  ScAddr const & conceptForwardDifferenceAddr = m_context.SearchElementBySystemIdentifier(CheckStudentAnswerKeynodes::concept_forward_difference);
+  
   ScTemplate templ2;
-  templ2.Triple(
-    someActionResult,
+  templ2.Quintuple(
+    conceptForwardDifferenceAddr,
     ScType::VarPermPosArc,
-    CheckStudentAnswerKeynodes::concept_forward_difference >> "_class"
+    ScType::VarNodeStructure >> "_structure",
+    ScType::VarPermPosArc,
+    someActionResult
   );
   ScTemplateSearchResult templ2Result;
   m_context.SearchByTemplate(templ2, templ2Result);
-  ScAddr const & conceptForwardDifferenceAddr = templ2Result[0]["_class"];
-  
-  ScTemplate templ3;
-  templ3.Triple(
-    conceptForwardDifferenceAddr,
-    ScType::VarPermPosArc,
-    ScType::VarNodeStructure >> "_structure"
-  );
-  ScTemplateSearchResult templ3Result;
-  m_context.SearchByTemplate(templ3, templ3Result);
-  ScAddr const & structWithMissingElementsAddr = templ3Result[0]["_structure"];
-  ScTemplate templ4;
-  templ4.Triple(
-    structWithMissingElementsAddr,
-    ScType::VarPermPosArc,
-    ScType::Unknown
-  );
-  ScTemplateSearchResult templ4Result;
-  m_context.SearchByTemplate(templ4, templ4Result);
-  if (templ4Result.Size() == 0) {
+  ScStructure const & structWithMissingElementsAddr = m_context.ConvertToStructure(templ2Result[0]["_structure"]);
+  if (structWithMissingElementsAddr.IsEmpty()) {
     ScAddr const & linkAddr = m_context.GenerateNode(ScType::ConstNodeLink);
     std::string linkContent = "Student gave right answer";
     m_context.SetLinkContent(linkAddr, linkContent);
@@ -87,4 +70,4 @@ ScResult CheckStudentAnswerAgent::DoProgram(ScAction & action)
     return action.FinishSuccessfully();
   }
 }
-}  // namespace dm  
+}  // namespace dm    
